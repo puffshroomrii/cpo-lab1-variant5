@@ -3,8 +3,9 @@ Mutable set based on hash map with open addressing.
 Supports None as a valid element.
 """
 
+
 class HashSet:
-    _EMPTY = object()      # 标记空槽
+    _EMPTY = object()  # 标记空槽
     _TOMBSTONE = object()  # 标记已删除（探测链不断）
 
     def __init__(self, growth_factor: float = 2.0, initial_capacity: int = 8):
@@ -103,7 +104,11 @@ class HashSet:
         """Remove elements that do NOT satisfy predicate."""
         for i in range(self._capacity):
             slot = self._table[i]
-            if slot is not self._EMPTY and slot is not self._TOMBSTONE and not predicate(slot):
+            if (
+                slot is not self._EMPTY
+                and slot is not self._TOMBSTONE
+                and not predicate(slot)
+            ):
                 self._table[i] = self._TOMBSTONE
                 self._size -= 1
 

@@ -9,6 +9,7 @@ from hash_set import HashSet
 
 # ========== 1. 单元测试 (Unit Tests) ==========
 
+
 def test_empty_set():
     s = HashSet()
     assert s.size() == 0
@@ -32,7 +33,7 @@ def test_add_and_member():
 def test_add_duplicate():
     s = HashSet()
     s.add(1)
-    s.add(1)   # duplicate
+    s.add(1)  # duplicate
     assert s.size() == 1
     assert s.member(1)
 
@@ -71,7 +72,7 @@ def test_to_list():
     s = HashSet()
     s.add(5)
     s.add(3)
-    s.add(3)   # duplicate ignored
+    s.add(3)  # duplicate ignored
     lst = s.to_list()
     assert set(lst) == {5, 3}
     assert len(lst) == 2
@@ -80,7 +81,7 @@ def test_to_list():
 def test_filter():
     s = HashSet()
     s.from_list([1, 2, 3, 4, 5])
-    s.filter(lambda x: x % 2 == 0)   # keep evens
+    s.filter(lambda x: x % 2 == 0)  # keep evens
     assert set(s.to_list()) == {2, 4}
     assert s.size() == 2
 
@@ -136,7 +137,7 @@ def test_empty_monoid():
     assert set(s.to_list()) == {7, 8}
 
     empty.concat(s)
-    assert set(empty.to_list()) == {7, 8}   # empty 被修改了，注意 concat 是原地修改
+    assert set(empty.to_list()) == {7, 8}  # empty 被修改了，注意 concat 是原地修改
 
 
 def test_growth_factor():
@@ -152,6 +153,7 @@ def test_growth_factor():
 
 # ========== 2. 属性测试 (Property-Based Tests) ==========
 
+
 @given(st.lists(st.integers()))
 def test_from_list_to_list_roundtrip(lst):
     """from_list + to_list 应该保持元素集合不变（顺序无关）"""
@@ -159,7 +161,7 @@ def test_from_list_to_list_roundtrip(lst):
     s.from_list(lst)
     result = s.to_list()
     assert set(result) == set(lst)
-    assert len(result) == len(set(lst))   # 去重后的大小
+    assert len(result) == len(set(lst))  # 去重后的大小
 
 
 @given(st.lists(st.integers()))
@@ -191,7 +193,7 @@ def test_monoid_concat_associative(a, b):
     s2 = HashSet()
     s2.from_list(b)
     s3 = HashSet()
-    s3.from_list(a)   # 任意第三个集合，这里简单重复 a
+    s3.from_list(a)  # 任意第三个集合，这里简单重复 a
 
     # (s1+s2)+s3
     left = HashSet()
@@ -301,6 +303,7 @@ def test_none_handling(lst):
 
 
 # ========== 3. 可选：与 Python 内置 set 行为一致性测试 ==========
+
 
 @given(st.lists(st.integers()))
 def test_consistency_with_builtin_set(lst):
