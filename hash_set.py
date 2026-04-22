@@ -34,7 +34,8 @@ class HashSet:
             slot = self._table[idx]
             if slot is self._EMPTY:
                 # 找到空槽，返回 tombstone 或该空槽
-                return (first_tombstone if first_tombstone != -1 else idx), False
+                insert_at = first_tombstone if first_tombstone != -1 else idx
+                return insert_at, False
             if slot is self._TOMBSTONE:
                 if first_tombstone == -1:
                     first_tombstone = idx
