@@ -33,7 +33,8 @@ class HashSet:
             slot = self._table[idx]
             if slot is self._EMPTY:
                 # 如果找到空槽，停止探测
-                return (first_tombstone if first_tombstone != -1 else idx), False
+                idx = first_tombstone if first_tombstone != -1 else -1
+                return idx, False
             if slot is self._TOMBSTONE:
                 if first_tombstone == -1:
                     first_tombstone = idx
