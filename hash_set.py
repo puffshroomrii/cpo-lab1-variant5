@@ -25,6 +25,7 @@ class HashSet:
         """
         Find the index of value in the table.
         Returns (index, found) where found is True if exists.
+        If the table has no space, index may be -1.
         """
         h = self._hash(value)
         first_tombstone = -1
@@ -32,21 +33,19 @@ class HashSet:
             idx = (h + i) % self._capacity
             slot = self._table[idx]
             if slot is self._EMPTY:
-                # 如果找到空槽，停止探测
-                idx = first_tombstone if first_tombstone != -1 else -1
-                return idx, False
+                # 找到空槽，返回 tombstone 或该空槽
+                return (first_tombstone if first_tombstone != -1 else idx), False
             if slot is self._TOMBSTONE:
                 if first_tombstone == -1:
                     first_tombstone = idx
                 continue
             if slot == value:
                 return idx, True
-        # 表满了（理论上不会，因为会扩容）
-        return (first_tombstone if first_tombstone != -1 else -1), False
+        # 表满了，返回 -1 表示需要扩容
+        return -1, False
 
     def _resize(self):
         old_table = self._table
-        old_capacity = self._capacity
         self._capacity = int(self._capacity * self._growth_factor)
         self._table = [self._EMPTY] * self._capacity
         self._size = 0
@@ -57,12 +56,17 @@ class HashSet:
 
     def add(self, value):
         """Add an element to the set."""
-        if self._size / self._capacity > 0.7:
+        # 提前扩容，避免插入后超载或找不到空位
+        if (self._size + 1) > self._capacity * 0.7:
             self._resize()
 
         idx, found = self._find_index(value)
         if found:
             return
+        if idx == -1:
+            # 极少数情况（如浮点误差）下仍无空位，强制扩容后重试
+            self._resize()
+            idx, found = self._find_index(value)
         self._table[idx] = value
         self._size += 1
 
@@ -118,12 +122,10 @@ class HashSet:
         Replace each element with func(element).
         After mapping, ensure no duplicates (set property).
         """
-        # 收集所有映射后的值，去重后再放回
         new_values = set()
         for slot in self._table:
             if slot is not self._EMPTY and slot is not self._TOMBSTONE:
                 new_values.add(func(slot))
-        # 清空并重新添加
         self.clear()
         for v in new_values:
             self.add(v)
