@@ -37,7 +37,11 @@ class HashSet(Generic[T]):
             slot = self._table[index]
 
             if slot is self._EMPTY:
-                insert_index = first_tombstone if first_tombstone != -1 else index
+                insert_index = (
+                    first_tombstone
+                    if first_tombstone != -1
+                    else index
+                )
                 return insert_index, False
 
             if slot is self._TOMBSTONE:
