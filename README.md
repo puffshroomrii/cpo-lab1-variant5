@@ -24,7 +24,6 @@ The set can grow dynamically with a user‑specified growth factor.
 
 ## Contribution
 
-- Aleksandr Penskoi (EMAIL) -- all work.
 - Luo Mengyao – Core implementation: `HashSet` class, open addressing logic,
   tombstone handling, resize policy, `add`, `remove`, `member`, `size`,
   `from_list`, `to_list`, `filter`, `map`, `reduce`, `concat`, `empty`,
@@ -35,6 +34,8 @@ The set can grow dynamically with a user‑specified growth factor.
 
 ## Changelog
 
+- 08.04.2026 - 2
+   - Fix.
 - 08.04.2026 - 1
    - Update README. Add formal sections.
 - 08.04.2026 - 0
