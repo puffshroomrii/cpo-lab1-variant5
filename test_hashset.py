@@ -145,7 +145,8 @@ def test_pbt_to_list_contains_all_elements(data: HashSet[int]) -> None:
 
 
 @given(hash_sets())
-def test_pbt_add_existing_element_does_not_change_size(data: HashSet[int]) -> None:
+def test_pbt_add_existing_element_does_not_change_size(
+        data: HashSet[int]) -> None:
     for value in data.to_list():
         old_size = data.size()
         data.add(value)
@@ -191,7 +192,8 @@ def test_pbt_filter_keeps_only_matching_values(data: HashSet[int]) -> None:
 
 
 @given(hash_sets())
-def test_pbt_map_preserves_size_for_injective_function(data: HashSet[int]) -> None:
+def test_pbt_map_preserves_size_for_injective_function(
+        data: HashSet[int]) -> None:
     old_size = data.size()
 
     data.map(lambda value: value + 1)
@@ -201,4 +203,9 @@ def test_pbt_map_preserves_size_for_injective_function(data: HashSet[int]) -> No
 
 @given(hash_sets())
 def test_pbt_reduce_sum(data: HashSet[int]) -> None:
-    assert data.reduce(lambda acc, value: acc + value, 0) == sum(data.to_list())
+    assert data.reduce(
+        lambda acc,
+        value: acc +
+        value,
+        0) == sum(
+        data.to_list())

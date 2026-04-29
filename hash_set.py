@@ -13,7 +13,8 @@ class HashSet(Generic[T]):
     _TOMBSTONE = object()
     _MAX_LOAD_FACTOR = 0.7
 
-    def __init__(self, growth_factor: float = 2.0, initial_capacity: int = 8) -> None:
+    def __init__(self, growth_factor: float = 2.0,
+                 initial_capacity: int = 8) -> None:
         if growth_factor <= 1.0:
             raise ValueError("growth_factor must be greater than 1.0")
         if initial_capacity < 1:
@@ -51,7 +52,8 @@ class HashSet(Generic[T]):
 
     def _resize(self) -> None:
         old_values = self.to_list()
-        new_capacity = max(self._capacity + 1, int(self._capacity * self._growth_factor))
+        new_capacity = max(self._capacity + 1,
+                           int(self._capacity * self._growth_factor))
 
         self._capacity = new_capacity
         self._table = [self._EMPTY] * self._capacity
