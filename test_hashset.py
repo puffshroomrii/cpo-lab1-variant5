@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from typing import Any, Iterable
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -7,8 +10,14 @@ from hash_set import HashSet
 
 
 @st.composite
-def hash_sets(draw: st.DrawFn) -> HashSet[int]:
+def hash_sets(draw: Any) -> HashSet[int]:
     values = draw(st.lists(st.integers()))
+    result: HashSet[int] = HashSet()
+    result.from_list(values)
+    return result
+
+
+def make_hash_set(values: Iterable[int]) -> HashSet[int]:
     result: HashSet[int] = HashSet()
     result.from_list(values)
     return result
@@ -16,12 +25,15 @@ def hash_sets(draw: st.DrawFn) -> HashSet[int]:
 
 def test_empty_set() -> None:
     data: HashSet[int] = HashSet()
+
     assert data.size() == 0
     assert data.to_list() == []
+    assert not data.member(1)
 
 
 def test_add_member_and_duplicate() -> None:
     data: HashSet[int | None] = HashSet()
+
     data.add(1)
     data.add(1)
     data.add(None)
@@ -46,8 +58,19 @@ def test_remove() -> None:
         data.remove(999)
 
 
+def test_remove_none() -> None:
+    data: HashSet[int | None] = HashSet()
+
+    data.add(None)
+    data.remove(None)
+
+    assert not data.member(None)
+    assert data.size() == 0
+
+
 def test_from_list_to_list() -> None:
     data: HashSet[int | None] = HashSet()
+
     data.from_list([1, 2, 2, 3, None, None])
 
     assert set(data.to_list()) == {1, 2, 3, None}
@@ -56,8 +79,8 @@ def test_from_list_to_list() -> None:
 
 def test_filter() -> None:
     data: HashSet[int] = HashSet()
-    data.from_list([1, 2, 3, 4, 5])
 
+    data.from_list([1, 2, 3, 4, 5])
     data.filter(lambda value: value % 2 == 0)
 
     assert data == make_hash_set([2, 4])
@@ -65,8 +88,8 @@ def test_filter() -> None:
 
 def test_map() -> None:
     data: HashSet[int] = HashSet()
-    data.from_list([1, 2, 3])
 
+    data.from_list([1, 2, 3])
     data.map(lambda value: value * 2)
 
     assert data == make_hash_set([2, 4, 6])
@@ -78,6 +101,7 @@ def test_map() -> None:
 
 def test_reduce() -> None:
     data: HashSet[int] = HashSet()
+
     data.from_list([1, 2, 3, 4])
 
     assert data.reduce(lambda acc, value: acc + value, 0) == 10
@@ -85,6 +109,7 @@ def test_reduce() -> None:
 
 def test_iterator() -> None:
     data: HashSet[int] = HashSet()
+
     data.from_list([10, 20, 30])
 
     assert set(iter(data)) == {10, 20, 30}
@@ -118,6 +143,7 @@ def test_growth_factor() -> None:
         data.add(value)
 
     assert data.size() == 100
+
     for value in range(100):
         assert data.member(value)
 
@@ -132,12 +158,6 @@ def test_eq() -> None:
     assert first != [1, 2, 3]
 
 
-def make_hash_set(values: list[int]) -> HashSet[int]:
-    result: HashSet[int] = HashSet()
-    result.from_list(values)
-    return result
-
-
 @given(hash_sets())
 def test_pbt_to_list_contains_all_elements(data: HashSet[int]) -> None:
     assert len(data.to_list()) == data.size()
@@ -146,7 +166,8 @@ def test_pbt_to_list_contains_all_elements(data: HashSet[int]) -> None:
 
 @given(hash_sets())
 def test_pbt_add_existing_element_does_not_change_size(
-        data: HashSet[int]) -> None:
+    data: HashSet[int],
+) -> None:
     for value in data.to_list():
         old_size = data.size()
         data.add(value)
@@ -184,7 +205,9 @@ def test_pbt_concat_identity(data: HashSet[int]) -> None:
 
 
 @given(hash_sets())
-def test_pbt_filter_keeps_only_matching_values(data: HashSet[int]) -> None:
+def test_pbt_filter_keeps_only_matching_values(
+    data: HashSet[int],
+) -> None:
     data.filter(lambda value: value % 2 == 0)
 
     for value in data:
@@ -193,7 +216,8 @@ def test_pbt_filter_keeps_only_matching_values(data: HashSet[int]) -> None:
 
 @given(hash_sets())
 def test_pbt_map_preserves_size_for_injective_function(
-        data: HashSet[int]) -> None:
+    data: HashSet[int],
+) -> None:
     old_size = data.size()
 
     data.map(lambda value: value + 1)
@@ -203,9 +227,6 @@ def test_pbt_map_preserves_size_for_injective_function(
 
 @given(hash_sets())
 def test_pbt_reduce_sum(data: HashSet[int]) -> None:
-    assert data.reduce(
-        lambda acc,
-        value: acc +
-        value,
-        0) == sum(
-        data.to_list())
+    assert data.reduce(lambda acc, value: acc + value, 0) == sum(
+        data.to_list()
+    )
